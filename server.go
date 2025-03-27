@@ -79,7 +79,7 @@ func (this *Server) Handler(conn net.Conn) {
     for {
       n, err := conn.Read(buf)
       if n == 0 {
-        this.BoradCast(user, "下线")
+        this.BroadCast(user, "下线")
         return
       }
 
