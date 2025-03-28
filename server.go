@@ -86,7 +86,7 @@ func (this *Server) Handler(conn net.Conn) {
 
       // 提取用户的消息，去除"\n"
       msg := string(buf[:n-1])
-      
+
       // 消息处理
       user.DoMessage(msg)
     }
@@ -98,7 +98,7 @@ func (this *Server) Handler(conn net.Conn) {
 
 // 广播消息的方法
 func (this *Server) BroadCast(user *User, msg string) {
-  sendMsg := "[]" + user.Addr + "]" + user.Name + ":" + msg
+  sendMsg := "[" + user.Addr + "]" + user.Name + ":" + msg
   this.Message <- sendMsg
 }
 
