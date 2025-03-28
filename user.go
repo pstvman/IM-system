@@ -2,7 +2,7 @@ package main
 
 import (
 	"net"
-	// "strings"
+	"strings"
 )
 
 
@@ -77,7 +77,8 @@ func (this *User)DoMessage(msg string) {
 			this.SendMsg(OnlineMsg)
 		}
 		this.server.mapLock.Unlock()
-	} else if len(msg)>7 && msg[:7] == "rename|" {
+		
+	} else if len(msg) > 7 && msg[:7] == "rename|" {
 		// 修改用户名
 		// newName := strings.Split(msg, "|")[1]
 		newName := msg[7:]
@@ -95,7 +96,32 @@ func (this *User)DoMessage(msg string) {
 
 		this.Name = newName
 		this.SendMsg("您已经更新用户名：" + this.Name + "\n")
-	}else {
+
+	} else if len(msg) >= 3 && msg[:3] == "to|" {
+		// 私聊消息
+		// 1. 获取对方用户名
+		remoteName := strings.Split(msg, "|")[1]
+		if remoteName == "" {
+			this.SendMsg("消息格式不正确，请使用\"to|用户名|消息内容\"格式\n")
+			return
+		}
+		if remoteName == this.Name {
+			this.SendMsg("不能给自己发送消息\n")
+			return
+		}
+
+		// 2. 根据用户名得到对方User对象
+		remoteUser, ok := this.server.OnlineMap[remoteName]
+		if !ok {
+			this.SendMsg("该用户名不存在\n")
+			return
+		}
+
+		// 3. 获取消息内容并发送给对方
+		content := strings.Split(msg, "|")[2]
+		remoteUser.SendMsg(this.Name + "对您说：" + content + "\n")
+
+	} else {
 		// 发送消息
 		this.server.BroadCast(this, msg)
 	}
