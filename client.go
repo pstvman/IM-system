@@ -5,6 +5,8 @@ import (
 	"fmt"
 	// "time"
 	"flag"
+	"io"
+	"os"
 )
 
 
@@ -35,6 +37,27 @@ func NewClient(serverIp string, serverPort int) *Client {
 
 	// 返回对象
 	return client
+}
+
+// 处理server回应的消息，直接显示到标准输出
+func (client *Client) DealResponse() {
+	// 一旦有消息，直接显示到标准输出
+	// 监听服务器返回的消息
+	io.Copy(os.Stdout, client.conn)
+}
+
+// 更新用户名业务
+func (client *Client) UpdateName() bool {
+	fmt.Println(">>>>> 请输入用户名:")
+	fmt.Scanln(&client.Name)
+	sendMsg := fmt.Sprintf("rename|%s\n", client.Name)
+	_, err := client.conn.Write([]byte(sendMsg))
+	if err != nil {
+		fmt.Println("conn.Write err: ", err)
+		return false
+	}
+
+	return true
 }
 
 // 聊天模式菜单
@@ -69,7 +92,7 @@ func (client *Client) Run() {
 			fmt.Println(" 私聊模式选择")
 			break
 		case 3:
-			fmt.Println(" 更新用户名选择")
+			client.UpdateName()
 			break
 		}
 	}
@@ -92,6 +115,9 @@ func main() {
 		fmt.Println(">>>>> 连接服务器失败")
 		return
 	}
+
+	// 读取服务器返回消息
+	go client.DealResponse()
 
 	fmt.Println(">>>>> 连接服务器成功")
 
