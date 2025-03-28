@@ -3,24 +3,26 @@ package main
 import (
 	"net"
 	"fmt"
-	"time"
+	// "time"
 	"flag"
 )
 
 
-type client struct {
+type Client struct {
 	ServerIp string
 	ServerPort int
 	Name string
 	conn net.Conn
+	flag int // 模式选择
 }
 
 // 创建一个client接口
-func NewClient(serverIp string, serverPort int) *client {
+func NewClient(serverIp string, serverPort int) *Client {
 	// 创建一个client对象
-	client := &client{
+	client := &Client{
 		ServerIp: serverIp,
 		ServerPort: serverPort,
+		flag: 999,
 	}
 
 	// 连接服务器
@@ -33,6 +35,44 @@ func NewClient(serverIp string, serverPort int) *client {
 
 	// 返回对象
 	return client
+}
+
+// 聊天模式菜单
+func (client *Client) menu() bool {
+	var flag int
+	fmt.Println(">>>请选择聊天模式:")
+	fmt.Println(">>>>> 1. 公聊模式")
+	fmt.Println(">>>>> 2. 私聊模式")
+	fmt.Println(">>>>> 3. 更新用户名")
+	fmt.Println(">>>>> 0. 退出")
+
+	fmt.Scanln(&flag)
+	if flag >= 0 && flag <= 3 {
+		client.flag = flag
+		return true
+	} else {
+		fmt.Println(">>>>> 请输入合法范围内的数字")
+		return false
+	}
+}
+
+func (client *Client) Run() {
+	for client.flag != 0 { // 非退出
+		for client.menu() != true { // 不合法输入
+		}
+		// 正常模式处理逻辑
+		switch client.flag {
+		case 1:
+			fmt.Println(" 公聊模式选择...")
+			break
+		case 2:
+			fmt.Println(" 私聊模式选择")
+			break
+		case 3:
+			fmt.Println(" 更新用户名选择")
+			break
+		}
+	}
 }
 
 var serverIp string
@@ -56,8 +96,5 @@ func main() {
 	fmt.Println(">>>>> 连接服务器成功")
 
 	// 启动客户端的业务
-	// select {}
-	for {
-		time.Sleep(time.Second)
-	}
+	client.Run()
 }
