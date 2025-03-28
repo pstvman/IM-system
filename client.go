@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 	"fmt"
+	"time"
 )
 
 
@@ -43,5 +44,8 @@ func main() {
 	fmt.Println(">>>>> 连接服务器成功")
 
 	// 启动客户端的业务
-	select {}
+	// select {}
+	for {
+		time.Sleep(time.Second)
+	}
 }
